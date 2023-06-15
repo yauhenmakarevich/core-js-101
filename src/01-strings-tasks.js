@@ -142,8 +142,8 @@ function removeFirstOccurrences(str, value) {
  *   '<span>' => 'span'
  *   '<a>' => 'a'
  */
-function unbracketTag(/* str */) {
-  throw new Error('Not implemented');
+function unbracketTag(str) {
+  return str.match(/<(.*?)>/)[1];
 }
 
 
@@ -157,8 +157,8 @@ function unbracketTag(/* str */) {
  *   'Thunderstruck' => 'THUNDERSTRUCK'
  *  'abcdefghijklmnopqrstuvwxyz' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
  */
-function convertToUpperCase(/* str */) {
-  throw new Error('Not implemented');
+function convertToUpperCase(str) {
+  return str.toUpperCase();
 }
 
 /**
@@ -176,8 +176,8 @@ function convertToUpperCase(/* str */) {
  *   ],
  *   'info@gmail.com' => ['info@gmail.com']
  */
-function extractEmails(/* str */) {
-  throw new Error('Not implemented');
+function extractEmails(str) {
+  return str.split(';');
 }
 
 /**
@@ -203,10 +203,32 @@ function extractEmails(/* str */) {
  *             '└──────────┘\n'
  *
  */
-function getRectangleString(/* width, height */) {
-  throw new Error('Not implemented');
+function getRectangleString(width, height) {
+  let str = '';
+  for (let i = 0; i < height; i += 1) {
+    for (let k = 0; k < width; k += 1) {
+      if (k === 0 && i === 0) {
+        str += '┌';
+      } else if (i === 0 && k === width - 1) {
+        str += '┐';
+      } else if (i === height - 1 && k === 0) {
+        str += '└';
+      } else if (i === height - 1 && k === width - 1) {
+        str += '┘';
+      } else if (
+        (i === 0 && k !== 0 && k !== width - 1) || (i === height - 1 && k !== 0 && k !== width - 1)
+      ) {
+        str += '─';
+      } else if (
+        (k === 0 && i !== 0 && i !== height - 1) || (k === width - 1 && i !== 0 && i !== height - 1)
+      ) {
+        str += '│';
+      } else str += ' ';
+    }
+    str += '\n';
+  }
+  return str;
 }
-
 
 /**
  * Encode specified string with ROT13 cipher

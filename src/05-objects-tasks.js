@@ -118,34 +118,114 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+class CssSelector {
+  constructor(selector = '') {
+    this.selector = selector;
+    this.hasElement = false;
+    this.hasId = false;
+    this.hasPseudo = false;
+    this.structure = 0;
+    this.HASERROR = 'Element, id and pseudo-element should not occur more then one time inside the selector';
+  }
+
+  check(n) {
+    if (this.structure > n) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+  }
+
+  element(value) {
+    if (this.hasElement) {
+      throw new Error(this.HASERROR);
+    }
+    this.check(1);
+    return new CssSelector(`${this.selector}${value}`);
+  }
+
+  id(value) {
+    if (this.hasId) {
+      throw new Error(this.HASERROR);
+    }
+    this.check(2);
+    return new CssSelector(`${this.selector}#${value}`);
+  }
+
+  class(value) {
+    this.check(3);
+    return new CssSelector(`${this.selector}.${value}`);
+  }
+
+  attr(value) {
+    this.check(4);
+    return new CssSelector(`${this.selector}[${value}]`);
+  }
+
+  pseudoClass(value) {
+    this.check(5);
+    return new CssSelector(`${this.selector}:${value}`);
+  }
+
+  pseudoElement(value) {
+    if (this.hasPseudo) {
+      throw new Error(this.HASERROR);
+    }
+    return new CssSelector(`${this.selector}::${value}`);
+  }
+
+  combine(selector, combinator = ' ') {
+    return new CssSelector(`${this.selector}${combinator}${selector}`);
+  }
+
+  stringify() {
+    return this.selector;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  selector: '',
+  element(value) {
+    const news = new CssSelector(value);
+    news.hasElement = true;
+    news.structure = 1;
+    return news;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    const news = new CssSelector(`#${value}`);
+    news.hasId = true;
+    news.structure = 2;
+    return news;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    const news = new CssSelector(`.${value}`);
+    news.structure = 3;
+    return news;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    const news = new CssSelector(`[${value}]`);
+    news.structure = 4;
+    return news;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    const news = new CssSelector(`:${value}`);
+    news.structure = 5;
+    return news;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    const news = new CssSelector(`::${value}`);
+    news.hasPseudo = true;
+    news.structure = 6;
+    return news;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return new CssSelector(`${selector1.stringify()} ${combinator} ${selector2.stringify()}`);
   },
+
 };
 
 
